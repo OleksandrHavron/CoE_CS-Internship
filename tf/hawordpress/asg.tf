@@ -46,10 +46,15 @@ resource "aws_launch_configuration" "edu" {
 }
 
 resource "aws_autoscaling_group" "terramino" {
+  depends_on = [
+    aws_efs_file_system.efs,
+    module.db.db
+  ]
+
   min_size             = 0
   max_size             = 2
   desired_capacity     = 2
   launch_configuration = aws_launch_configuration.edu.name
-  vpc_zone_identifier  = module.vpc.public_subnets
+  vpc_zone_identifier  = module.vpc.private_subnets
   target_group_arns    = "${module.alb.target_group_arns}"
 }
