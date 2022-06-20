@@ -89,3 +89,10 @@ cluster.initial_master_nodes: ["master_node_0", "master_node_1"]
 # Require explicit names when deleting indices:
 #
 #action.destructive_requires_name: true
+#xpack.security.enabled: true
+#xpack.security.http.ssl.enabled: true
+#xpack.security.http.ssl.keystore.path: "es-certificates.p12"
+#xpack.security.http.ssl.truststore.path: "es-certificates.p12"
+#xpack.security.transport.ssl.enabled: true
+#xpack.security.authc.token.enabled: true
+#xpack.security.authc.api_key.enabled: true

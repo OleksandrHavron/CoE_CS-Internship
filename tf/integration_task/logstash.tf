@@ -1,7 +1,7 @@
 resource "aws_instance" "logstash" {
-  depends_on = [ 
+  depends_on = [
     null_resource.install_kibana
-   ]
+  ]
   count                       = 2
   ami                         = "ami-05f5f4f906feab6a7"
   instance_type               = "t2.small"
@@ -15,45 +15,51 @@ resource "aws_instance" "logstash" {
 }
 
 data "template_file" "init_logstash" {
-  depends_on = [ 
+  depends_on = [
     aws_instance.logstash
   ]
   template = file("./logstash_config.tpl")
   vars = {
-    elasticsearch1 = aws_instance.es_master_nodes[0].public_ip
-    elasticsearch2 = aws_instance.es_master_nodes[1].public_ip
+    elasticsearch1 = aws_instance.es_master_nodes[0].private_ip
+    elasticsearch2 = aws_instance.es_master_nodes[1].private_ip
   }
 }
 
 resource "null_resource" "move_logstash_file" {
-  depends_on = [ 
+  depends_on = [
     aws_instance.logstash
-   ]
+  ]
   count = 2
   connection {
-     type = "ssh"
-     user = "ec2-user"
-     private_key = file("tf-kp")
-     host= aws_instance.logstash[count.index].public_ip
-  } 
+    type                = "ssh"
+    user                = "ec2-user"
+    private_key         = file("tf-kp")
+    host                = aws_instance.logstash[count.index].private_ip
+    bastion_host        = aws_instance.bastion.public_ip
+    bastion_user        = "ubuntu"
+    bastion_private_key = file("tf-kp")
+  }
   provisioner "file" {
-    content = data.template_file.init_logstash.rendered
+    content     = data.template_file.init_logstash.rendered
     destination = "logstash.conf"
   }
 }
 
 
 resource "null_resource" "install_logstash" {
-  depends_on = [ 
-      aws_instance.logstash
-   ]
+  depends_on = [
+    aws_instance.logstash
+  ]
   count = 2
   connection {
-    type = "ssh"
-    user = "ec2-user"
-    private_key = file("tf-kp")
-    host= aws_instance.logstash[count.index].public_ip
-  } 
+    type                = "ssh"
+    user                = "ec2-user"
+    private_key         = file("tf-kp")
+    host                = aws_instance.logstash[count.index].private_ip
+    bastion_host        = aws_instance.bastion.public_ip
+    bastion_user        = "ubuntu"
+    bastion_private_key = file("tf-kp")
+  }
   provisioner "remote-exec" {
     inline = [
       "sudo yum update -y && sudo yum install java-1.8.0-openjdk -y",

@@ -1,5 +1,5 @@
 resource "aws_key_pair" "elastic_ssh_key" {
-  key_name="tf-kp"
+  key_name="tf-kp1"
   public_key= file("tf-kp.pub")
 }
 
@@ -19,7 +19,7 @@ resource "aws_instance" "es_master_nodes" {
     count = var.es_master_nodes_number
     ami = "ami-05f5f4f906feab6a7"
     instance_type = "t2.large"
-    subnet_id = module.vpc.public_subnets[count.index < var.es_master_nodes_number / 2 ? 0 : 1]
+    subnet_id = count.index < var.es_master_nodes_number / 2 ? aws_subnet.hawordpress-private-eu-central-1a.id : aws_subnet.hawordpress-private-eu-central-1b.id
     vpc_security_group_ids = [aws_security_group.elasticsearch_sg.id]
     associate_public_ip_address = true
 
@@ -95,7 +95,7 @@ resource "aws_instance" "es_data_nodes" {
     count = var.es_data_nodes_number
     ami = "ami-05f5f4f906feab6a7"
     instance_type = "t2.large"
-    subnet_id = module.vpc.public_subnets[count.index < var.es_data_nodes_number / 2 ? 0 : 1]
+    subnet_id = count.index < var.es_master_nodes_number / 2 ? aws_subnet.hawordpress-private-eu-central-1a.id : aws_subnet.hawordpress-private-eu-central-1b.id
     vpc_security_group_ids = [aws_security_group.elasticsearch_sg.id]
     associate_public_ip_address = true
 
@@ -125,6 +125,15 @@ data "template_file" "init_elasticsearch" {
   }
 }
 
+# data "template_file" "cert_elasticsearch" {
+#   depends_on = [ 
+#     aws_instance.es_data_nodes,
+#     aws_instance.es_master_nodes
+#   ]
+#   template = filemd5("./es-certificates.p12")
+
+# }
+
 resource "null_resource" "move_elasticsearch_file" {
   count = var.es_data_nodes_number
   connection {
@@ -137,6 +146,10 @@ resource "null_resource" "move_elasticsearch_file" {
     content = data.template_file.init_elasticsearch[count.index].rendered
     destination = "elasticsearch.yml"
   }
+  # provisioner "file" {
+  #   source = "./es-certificates.p12"
+  #   destination = "es-certificates.p12"
+  # }
 }
 
 resource "null_resource" "start_es" {
@@ -162,6 +175,11 @@ resource "null_resource" "start_es" {
       "sudo sed -i 's@-Xmx1g@-Xmx${aws_instance.es_data_nodes[count.index].root_block_device[0].volume_size/2}g@g' /etc/elasticsearch/jvm.options",
       "sudo rm /etc/elasticsearch/elasticsearch.yml",
       "sudo cp elasticsearch.yml /etc/elasticsearch/",
+      
+      # "sudo cp es-certificates.p12 /etc/elasticsearch/",
+
+
+
       "sudo systemctl start elasticsearch.service"
     ]
   }

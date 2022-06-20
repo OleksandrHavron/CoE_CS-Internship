@@ -1,5 +1,5 @@
 resource "aws_security_group" "elasticsearch_sg" {
-  vpc_id = module.vpc.vpc_id
+  vpc_id = aws_vpc.hawordpress.id
   ingress {
     description = "ingress rules"
     cidr_blocks = [ "0.0.0.0/0" ]
@@ -34,7 +34,7 @@ resource "aws_security_group" "elasticsearch_sg" {
 }
 
 resource "aws_security_group" "logstash_sg" {
-  vpc_id = module.vpc.vpc_id
+  vpc_id = aws_vpc.hawordpress.id
     ingress {
     description = "ingress rules"
     cidr_blocks = [ "0.0.0.0/0" ]
@@ -69,7 +69,7 @@ resource "aws_security_group" "logstash_sg" {
 }
 
 resource "aws_security_group" "kibana_sg" {
-  vpc_id = module.vpc.vpc_id
+  vpc_id = aws_vpc.hawordpress.id
     ingress {
     description = "ingress rules"
     cidr_blocks = [ "0.0.0.0/0" ]
@@ -104,7 +104,7 @@ resource "aws_security_group" "kibana_sg" {
 }
 
 resource "aws_security_group" "filebeat_sg" {
-  vpc_id = module.vpc.vpc_id
+  vpc_id = aws_vpc.hawordpress.id
     ingress {
     description = "ingress rules"
     cidr_blocks = [ "0.0.0.0/0" ]

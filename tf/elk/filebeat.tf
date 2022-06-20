@@ -3,8 +3,8 @@ resource "aws_instance" "filebeat" {
     null_resource.install_logstash
    ]
   ami                    = "ami-05f5f4f906feab6a7"
-  instance_type          = "t2.large"
-  subnet_id = module.vpc.public_subnets[0]
+  instance_type          = "t2.small"
+  subnet_id = aws_subnet.hawordpress-private-eu-central-1a.id
   vpc_security_group_ids = [aws_security_group.filebeat_sg.id]
   key_name               = aws_key_pair.elastic_ssh_key.key_name
   associate_public_ip_address = true
