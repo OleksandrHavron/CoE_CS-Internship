@@ -104,7 +104,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_cpu_util" {
   comparison_operator = "GreaterThanOrEqualToThreshold"
   namespace           = "AWS/EC2"
   metric_name         = "CPUUtilization"
-  threshold           = "80"
+  threshold           = "50"
   evaluation_periods  = "2"
   period              = "120"
   statistic           = "Average"
@@ -123,7 +123,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_ntwrk_in" {
   threshold           = "80"
   evaluation_periods  = "2"
   period              = "120"
-  statistic           = "Average"
+  statistic           = "Maximum"
 
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.terramino.name
@@ -139,7 +139,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_ntwrk_out" {
   threshold           = "80"
   evaluation_periods  = "2"
   period              = "120"
-  statistic           = "Average"
+  statistic           = "Maximum"
 
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.terramino.name
@@ -229,9 +229,9 @@ resource "aws_cloudwatch_metric_alarm" "rds_strg_spc" {
 resource "aws_cloudwatch_metric_alarm" "efs_strg_bts" {
   alarm_description   = "Monitors CPU utilization for Terramino ASG"
   alarm_name          = "efs_strg_bts"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
+  comparison_operator = "LessThanOrEqualToThreshold"
   namespace           = "AWS/EFS"
-  metric_name         = "StorageBytesTotal"
+  metric_name         = "StorageBytes"
   threshold           = "80"
   evaluation_periods  = "2"
   period              = "120"
@@ -239,12 +239,13 @@ resource "aws_cloudwatch_metric_alarm" "efs_strg_bts" {
 
   dimensions = {
     FileSystemId = aws_efs_file_system.efs.id
+    StorageClass = "Total"
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "foobar" {
   alarm_name                = "elastic_health"
-  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  comparison_operator       = "LessThanThreshold"
   evaluation_periods        = "2"
   metric_name               = "cluster_health"
   namespace                 = "ES_CLUSTER"
@@ -254,8 +255,8 @@ resource "aws_cloudwatch_metric_alarm" "foobar" {
   alarm_description         = "This metric monitors elasticsearch cluster health"
   insufficient_data_actions = []
 
-  # dimensions = {
-  #  "Cluster Name" = "cluster1" 
-  # }
+  dimensions = {
+   "Cluster name" = "cluster1" 
+  }
 
 }

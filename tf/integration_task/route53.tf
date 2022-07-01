@@ -14,14 +14,14 @@ resource "aws_route53_record" "hawordpress" {
   }
 }
 
-# resource "aws_route53_record" "elk1" {
-#   zone_id = data.aws_route53_zone.hawordpress.zone_id
-#   name    = "elk.${data.aws_route53_zone.hawordpress.name}"
-#   type    = "A"
+resource "aws_route53_record" "elk" {
+  zone_id = data.aws_route53_zone.hawordpress.zone_id
+  name    = "elk.${data.aws_route53_zone.hawordpress.name}"
+  type    = "A"
 
-#   records = ["${aws_instance.kibana.public_ip}"]
-#   ttl     = 300
-# }
+  records = ["${aws_instance.kibana.public_ip}"]
+  ttl     = 300
+}
 
 
 resource "aws_route53_zone" "elasticsearch" {
@@ -50,15 +50,15 @@ resource "aws_route53_zone" "logstash" {
   }
 }
 
-resource "aws_route53_zone" "elk" {
-  name = "elk.ohavron-ocg1.link"
-}
+# resource "aws_route53_zone" "elk" {
+#   name = "elk.ohavron-ocg1.link"
+# }
 
-resource "aws_route53_record" "elk" {
-  zone_id = aws_route53_zone.elk.zone_id
-  name    = aws_route53_zone.elk.name
-  type    = "A"
+# resource "aws_route53_record" "elk" {
+#   zone_id = aws_route53_zone.elk.zone_id
+#   name    = aws_route53_zone.elk.name
+#   type    = "A"
 
-  records = ["${aws_instance.kibana.public_ip}"]
-  ttl     = 300
-}
+#   records = ["${aws_instance.kibana.public_ip}"]
+#   ttl     = 300
+# }
