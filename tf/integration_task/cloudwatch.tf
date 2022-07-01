@@ -210,22 +210,6 @@ resource "aws_cloudwatch_metric_alarm" "rds_free_mem" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "rds_free_ls" {
-  alarm_description   = "Monitors CPU utilization for Terramino ASG"
-  alarm_name          = "rds_free_ls"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  namespace           = "AWS/RDS"
-  metric_name         = "FreeLocalStorage"
-  threshold           = "80"
-  evaluation_periods  = "2"
-  period              = "120"
-  statistic           = "Average"
-
-  dimensions = {
-    DBInstanceIdentifier = module.db.db_instance_name
-  }
-}
-
 resource "aws_cloudwatch_metric_alarm" "rds_strg_spc" {
   alarm_description   = "Monitors CPU utilization for Terramino ASG"
   alarm_name          = "rds_strg_spc"
@@ -242,28 +226,12 @@ resource "aws_cloudwatch_metric_alarm" "rds_strg_spc" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "asg_gp_in_srvc_cpct" {
-  alarm_description   = "Monitors CPU utilization for Terramino ASG"
-  alarm_name          = "asg_gp_in_srvc_cpct"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  namespace           = "AWS/AutoScaling"
-  metric_name         = "GroupInServiceCapacity"
-  threshold           = "5"
-  evaluation_periods  = "2"
-  period              = "120"
-  statistic           = "Maximum"
-
-  dimensions = {
-    AutoScalingGroupName = aws_autoscaling_group.terramino.name
-  }
-}
-
 resource "aws_cloudwatch_metric_alarm" "efs_strg_bts" {
   alarm_description   = "Monitors CPU utilization for Terramino ASG"
   alarm_name          = "efs_strg_bts"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   namespace           = "AWS/EFS"
-  metric_name         = "StorageBytes"
+  metric_name         = "StorageBytesTotal"
   threshold           = "80"
   evaluation_periods  = "2"
   period              = "120"
@@ -274,31 +242,20 @@ resource "aws_cloudwatch_metric_alarm" "efs_strg_bts" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "alb_actv_conn_count" {
-  alarm_description   = "Monitors CPU utilization for Terramino ASG"
-  alarm_name          = "alb_actv_conn_count"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  namespace           = "AWS/ApplicationELB"
-  metric_name         = "ActiveConnectionCount"
-  threshold           = "80"
-  evaluation_periods  = "2"
-  period              = "120"
-  statistic           = "Sum"
-
-  dimensions = {
-    LoadBalancer = module.alb.lb_dns_name
-  }
-}
-
 resource "aws_cloudwatch_metric_alarm" "foobar" {
   alarm_name                = "elastic_health"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = "2"
-  metric_name               = "ES_Health"
+  metric_name               = "cluster_health"
   namespace                 = "ES_CLUSTER"
   period                    = "120"
-  statistic                 = "SampleCount"
+  statistic                 = "Maximum"
   threshold                 = "1"
   alarm_description         = "This metric monitors elasticsearch cluster health"
   insufficient_data_actions = []
+
+  # dimensions = {
+  #  "Cluster Name" = "cluster1" 
+  # }
+
 }

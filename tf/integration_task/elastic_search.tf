@@ -3,22 +3,10 @@ resource "aws_key_pair" "elastic_ssh_key" {
   public_key = file("tf-kp.pub")
 }
 
-variable "es_data_nodes_number" {
-  type    = number
-  default = 4
-
-}
-
-variable "es_master_nodes_number" {
-  type    = number
-  default = 2
-
-}
-
 resource "aws_instance" "es_master_nodes" {
   count                       = var.es_master_nodes_number
-  ami                         = "ami-05f5f4f906feab6a7"
-  instance_type               = "t2.large"
+  ami                         = var.es_master_node_ami
+  instance_type               = var.es_master_node_instance_type
   subnet_id                   = count.index < var.es_master_nodes_number / 2 ? aws_subnet.hawordpress-private-eu-central-1a.id : aws_subnet.hawordpress-private-eu-central-1b.id
   vpc_security_group_ids      = [aws_security_group.elasticsearch_sg.id]
   associate_public_ip_address = true
@@ -99,8 +87,8 @@ resource "null_resource" "start_master_es" {
 
 resource "aws_instance" "es_data_nodes" {
   count                       = var.es_data_nodes_number
-  ami                         = "ami-05f5f4f906feab6a7"
-  instance_type               = "t2.large"
+  ami                         = var.es_data_node_ami
+  instance_type               = var.es_data_node_instance_type
   subnet_id                   = count.index < var.es_master_nodes_number / 2 ? aws_subnet.hawordpress-private-eu-central-1a.id : aws_subnet.hawordpress-private-eu-central-1b.id
   vpc_security_group_ids      = [aws_security_group.elasticsearch_sg.id]
   associate_public_ip_address = true

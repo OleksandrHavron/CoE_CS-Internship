@@ -1,10 +1,10 @@
-data "aws_route53_zone" "hawordpress"{
-    name = "ohavron-ocg1.link"
+data "aws_route53_zone" "hawordpress" {
+  name = "ohavron-ocg1.link"
 }
 
 resource "aws_route53_record" "hawordpress" {
   zone_id = data.aws_route53_zone.hawordpress.zone_id
-  name    = "${data.aws_route53_zone.hawordpress.name}"
+  name    = data.aws_route53_zone.hawordpress.name
   type    = "A"
 
   alias {
@@ -13,6 +13,15 @@ resource "aws_route53_record" "hawordpress" {
     evaluate_target_health = true
   }
 }
+
+# resource "aws_route53_record" "elk1" {
+#   zone_id = data.aws_route53_zone.hawordpress.zone_id
+#   name    = "elk.${data.aws_route53_zone.hawordpress.name}"
+#   type    = "A"
+
+#   records = ["${aws_instance.kibana.public_ip}"]
+#   ttl     = 300
+# }
 
 
 resource "aws_route53_zone" "elasticsearch" {
@@ -29,8 +38,8 @@ resource "aws_route53_record" "elasticsearch" {
   name    = aws_route53_zone.elasticsearch.name
   type    = "A"
 
-  records = [ "${aws_instance.es_master_nodes[1].private_ip}" ]
-  ttl = 300
+  records = ["${aws_instance.es_master_nodes[1].private_ip}"]
+  ttl     = 300
 }
 
 resource "aws_route53_zone" "logstash" {
@@ -50,6 +59,6 @@ resource "aws_route53_record" "elk" {
   name    = aws_route53_zone.elk.name
   type    = "A"
 
-  records = [ "${aws_instance.kibana.public_ip}" ]
-  ttl = 300
+  records = ["${aws_instance.kibana.public_ip}"]
+  ttl     = 300
 }

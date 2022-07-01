@@ -2,8 +2,8 @@ resource "aws_instance" "kibana" {
   depends_on = [
     null_resource.start_es
   ]
-  ami                         = "ami-05f5f4f906feab6a7"
-  instance_type               = "t2.small"
+  ami                         = var.kibana_ami
+  instance_type               = var.kibana_instance_type
   subnet_id                   = aws_subnet.hawordpress-public-eu-central-1a.id
   vpc_security_group_ids      = [aws_security_group.kibana_sg.id]
   key_name                    = aws_key_pair.elastic_ssh_key.key_name

@@ -2,9 +2,9 @@ resource "aws_instance" "logstash" {
   depends_on = [
     null_resource.install_kibana
   ]
-  count                       = 2
-  ami                         = "ami-05f5f4f906feab6a7"
-  instance_type               = "t2.small"
+  count                       = var.logstash_count
+  ami                         = var.logstash_ami
+  instance_type               = var.logstash_instance_type
   subnet_id                   = aws_subnet.hawordpress-private-eu-central-1b.id
   vpc_security_group_ids      = [aws_security_group.logstash_sg.id]
   key_name                    = aws_key_pair.elastic_ssh_key.key_name
@@ -29,7 +29,7 @@ resource "null_resource" "move_logstash_file" {
   depends_on = [
     aws_instance.logstash
   ]
-  count = 2
+  count = var.logstash_count
   connection {
     type                = "ssh"
     user                = "ec2-user"
@@ -50,7 +50,7 @@ resource "null_resource" "install_logstash" {
   depends_on = [
     aws_instance.logstash
   ]
-  count = 2
+  count = var.logstash_count
   connection {
     type                = "ssh"
     user                = "ec2-user"

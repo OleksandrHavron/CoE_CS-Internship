@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "edu" {
-  name_prefix     = "education-"
-  image_id        = "ami-05f5f4f906feab6a7"
-  instance_type   = "t2.micro"
+  name_prefix     = var.name_prefix
+  image_id        = var.asg_image_id
+  instance_type   = var.asg_instance_type
   security_groups = [aws_security_group.asg.id]
   
   associate_public_ip_address = true
@@ -87,9 +87,9 @@ resource "aws_autoscaling_group" "terramino" {
     aws_instance.kibana
   ]
 
-  min_size             = 0
-  max_size             = 2
-  desired_capacity     = 2
+  min_size             = var.asg_min_size
+  max_size             = var.asg_max_size
+  desired_capacity     = var.asg_desired_capacity
   launch_configuration = aws_launch_configuration.edu.name
   vpc_zone_identifier  = [aws_subnet.hawordpress-private-eu-central-1a.id, aws_subnet.hawordpress-private-eu-central-1b.id]
   target_group_arns    = "${module.alb.target_group_arns}"
