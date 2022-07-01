@@ -6,9 +6,9 @@ module "alb" {
 
   load_balancer_type = "application"
 
-  vpc_id             = aws_vpc.hawordpress.id
-  subnets            = [aws_subnet.hawordpress-public-eu-central-1a.id, aws_subnet.hawordpress-public-eu-central-1b.id]
-  security_groups    = [aws_security_group.alb.id]
+  vpc_id                           = aws_vpc.hawordpress.id
+  subnets                          = [aws_subnet.hawordpress-public-eu-central-1a.id, aws_subnet.hawordpress-public-eu-central-1b.id]
+  security_groups                  = [aws_security_group.alb.id]
   enable_cross_zone_load_balancing = true
 
   target_groups = [
@@ -32,9 +32,9 @@ module "alb" {
 
   http_tcp_listeners = [
     {
-      port               = 80
-      protocol           = "HTTP"
-      action_type        = "redirect"
+      port        = 80
+      protocol    = "HTTP"
+      action_type = "redirect"
       redirect = {
         port        = "443"
         protocol    = "HTTPS"

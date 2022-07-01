@@ -43,6 +43,13 @@ data "template_file" "oauth2-proxy-cfg" {
   }
 }
 
+data "template_file" "oauth2-proxy-service" {
+  depends_on = [
+    aws_instance.kibana
+  ]
+  template = file("./oauth2-proxy.service")
+}
+
 resource "null_resource" "move_kibana_file" {
   depends_on = [
     aws_instance.kibana,
@@ -69,6 +76,10 @@ resource "null_resource" "move_kibana_file" {
   provisioner "file" {
     content     = data.template_file.oauth2-proxy-cfg.rendered
     destination = "oauth2-proxy.cfg"
+  }
+  provisioner "file" {
+    content     = data.template_file.oauth2-proxy-service.rendered
+    destination = "oauth2-proxy.service"
   }
 }
 
@@ -101,8 +112,12 @@ resource "null_resource" "install_kibana" {
       "cd /home/ec2-user",
       "wget https://github.com/oauth2-proxy/oauth2-proxy/releases/download/v7.3.0/oauth2-proxy-v7.3.0.linux-amd64.tar.gz",
       "tar -xzvf oauth2-proxy-v7.3.0.linux-amd64.tar.gz",
-      "sudo cp oauth2-proxy-v7.3.0.linux-amd64/oauth2-proxy /bin/",
-      #"oauth2-proxy --config oauth2-proxy.cfg --provider=github &"
+      "sudo mkdir /opt/oauth2-proxy",
+      "sudo cp oauth2-proxy-v7.3.0.linux-amd64/oauth2-proxy /opt/oauth2-proxy",
+      "sudo mkdir /etc/oauth2-proxy",
+      "sudo cp oauth2-proxy.cfg /etc/oauth2-proxy/",
+      "sudo cp oauth2-proxy.service /etc/systemd/system/",
+      "sudo systemctl start oauth2-proxy.service"
     ]
   }
 }

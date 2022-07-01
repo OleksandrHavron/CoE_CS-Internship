@@ -17,7 +17,7 @@ module "lambda_function" {
     "arn:aws:lambda:eu-central-1:336392948345:layer:AWSDataWrangler-Python39:4"
   ]
 
-  attach_policy_json = true
+  attach_policy_json     = true
   number_of_policy_jsons = 1
 
   policy_json = jsonencode({
@@ -42,10 +42,9 @@ module "lambda_function" {
   }
 
   environment_variables = {
-    count = 0
-    # ToDO: change hardcoded values
-    email_pass    = "bbdfbjdzgvlaykum"
-    email_address = "stigua25@gmail.com"
+    count         = 0
+    email_pass    = file("./email_pass")
+    email_address = file("./email_address")
   }
 
   tags = {
@@ -59,7 +58,7 @@ resource "aws_cloudwatch_event_rule" "lambda_http_checker" {
 
   schedule_expression = "rate(5 minutes)"
 
-  is_enabled = false
+  is_enabled = true
 }
 
 resource "aws_cloudwatch_event_target" "scan_ami_lambda_function" {

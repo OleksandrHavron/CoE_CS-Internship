@@ -34,7 +34,10 @@ override.tf.json
 
 builds/
 
+.vscode
 
+email_pass
+email_address
 coe-internship.pem
 id.pem
 tf-kp

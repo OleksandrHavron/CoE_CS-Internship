@@ -131,15 +131,6 @@ data "template_file" "init_elasticsearch" {
   }
 }
 
-# data "template_file" "cert_elasticsearch" {
-#   depends_on = [ 
-#     aws_instance.es_data_nodes,
-#     aws_instance.es_master_nodes
-#   ]
-#   template = filemd5("./es-certificates.p12")
-
-# }
-
 resource "null_resource" "move_elasticsearch_file" {
   count = var.es_data_nodes_number
   connection {
@@ -155,10 +146,6 @@ resource "null_resource" "move_elasticsearch_file" {
     content     = data.template_file.init_elasticsearch[count.index].rendered
     destination = "elasticsearch.yml"
   }
-  # provisioner "file" {
-  #   source = "./es-certificates.p12"
-  #   destination = "es-certificates.p12"
-  # }
 }
 
 resource "null_resource" "start_es" {
@@ -187,11 +174,6 @@ resource "null_resource" "start_es" {
       "sudo sed -i 's@-Xmx1g@-Xmx${aws_instance.es_data_nodes[count.index].root_block_device[0].volume_size / 2}g@g' /etc/elasticsearch/jvm.options",
       "sudo rm /etc/elasticsearch/elasticsearch.yml",
       "sudo cp elasticsearch.yml /etc/elasticsearch/",
-
-      # "sudo cp es-certificates.p12 /etc/elasticsearch/",
-
-
-
       "sudo systemctl start elasticsearch.service"
     ]
   }
