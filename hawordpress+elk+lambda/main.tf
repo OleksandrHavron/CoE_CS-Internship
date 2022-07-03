@@ -26,7 +26,7 @@ module "hawordpress" {
   efs-mt1_subnet_id      = aws_subnet.hawordpress-private-eu-central-1a.id
   efs-mt2_subnet_id      = aws_subnet.hawordpress-private-eu-central-1b.id
 
-  asg_name_prefix                 = "education-"
+  asg_name_prefix                 = "hawordpress-"
   asg_image_id                    = "ami-05f5f4f906feab6a7"
   asg_instance_type               = "t2.micro"
   asg_security_groups             = [aws_security_group.asg.id]
@@ -46,4 +46,42 @@ module "hawordpress" {
   alb_enable_cross_zone_load_balancing = true
 
   aws_route53_zone_name = "ohavron-ocg1.link"
+}
+
+module "lambda_http_checker" {
+  source = "./modules/lambda"
+
+  vpc_subnet_ids         = [aws_subnet.hawordpress-private-eu-central-1a.id, aws_subnet.hawordpress-private-eu-central-1b.id]
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+  email_address          = file("./email_address")
+  email_pass             = file("./email_pass")
+}
+
+module "elk" {
+  source = "./modules/elk"
+
+  bastion_subnet_id              = aws_subnet.hawordpress-public-eu-central-1a.id
+  bastion_vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+
+  es_master_node_count                  = var.elk_es_master_node_count
+  es_data_node_count                    = var.elk_es_data_node_count
+  es_subnet_ids                        = [aws_subnet.hawordpress-private-eu-central-1a.id, aws_subnet.hawordpress-private-eu-central-1b.id]
+  es_master_node_vpc_security_group_ids = [aws_security_group.elasticsearch_sg.id]
+  es_data_node_vpc_security_group_ids   = [aws_security_group.elasticsearch_sg.id]
+  es_connection_private_key_path        = "./tf-kp"
+
+  connection_bastion_private_key_path = "./tf-kp"
+
+  kibana_subnet_id                   = aws_subnet.hawordpress-public-eu-central-1a.id
+  kibana_vpc_security_group_ids      = [aws_security_group.kibana_sg.id]
+  kibana_connection_private_key_path = "./tf-kp"
+
+  logstash_subnet_id                   = aws_subnet.hawordpress-private-eu-central-1b.id
+  logstash_vpc_security_group_ids      = [aws_security_group.logstash_sg.id]
+  logstash_connection_private_key_path = "./tf-kp"
+
+  filebeat_connection_hosts            = []
+  filebeat_count                       = 0
+  filebeat_connection_private_key_path = "./tf-kp"
+
 }
