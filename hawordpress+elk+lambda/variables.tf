@@ -12,3 +12,4 @@ variable "elk_es_data_node_count" {
   type = number
   default = 4
 }
+

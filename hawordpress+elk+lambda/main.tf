@@ -1,3 +1,7 @@
+locals {
+  hawordpress_asg_name = "hawordpress_asg"
+}
+
 module "hawordpress" {
   source = "./modules/hawordpress"
 
@@ -27,6 +31,7 @@ module "hawordpress" {
   efs-mt2_subnet_id      = aws_subnet.hawordpress-private-eu-central-1b.id
 
   asg_name_prefix                 = "hawordpress-"
+  asg_name                        = local.hawordpress_asg_name
   asg_image_id                    = "ami-05f5f4f906feab6a7"
   asg_instance_type               = "t2.micro"
   asg_security_groups             = [aws_security_group.asg.id]
@@ -57,6 +62,12 @@ module "lambda_http_checker" {
   email_pass             = file("./email_pass")
 }
 
+data "aws_instances" "hawordpress_asg" {
+  instance_tags = {
+    "aws:autoscaling:groupName" = local.hawordpress_asg_name
+  }
+}
+
 module "elk" {
   source = "./modules/elk"
 
@@ -65,7 +76,7 @@ module "elk" {
 
   es_master_node_count                  = var.elk_es_master_node_count
   es_data_node_count                    = var.elk_es_data_node_count
-  es_subnet_ids                        = [aws_subnet.hawordpress-private-eu-central-1a.id, aws_subnet.hawordpress-private-eu-central-1b.id]
+  es_subnet_ids                         = [aws_subnet.hawordpress-private-eu-central-1a.id, aws_subnet.hawordpress-private-eu-central-1b.id]
   es_master_node_vpc_security_group_ids = [aws_security_group.elasticsearch_sg.id]
   es_data_node_vpc_security_group_ids   = [aws_security_group.elasticsearch_sg.id]
   es_connection_private_key_path        = "./tf-kp"
@@ -80,8 +91,8 @@ module "elk" {
   logstash_vpc_security_group_ids      = [aws_security_group.logstash_sg.id]
   logstash_connection_private_key_path = "./tf-kp"
 
-  filebeat_connection_hosts            = []
-  filebeat_count                       = 0
+  filebeat_connection_hosts            = data.aws_instances.hawordpress_asg.private_ips
+  filebeat_count                       = length(data.aws_instances.hawordpress_asg.private_ips)
   filebeat_connection_private_key_path = "./tf-kp"
 
 }

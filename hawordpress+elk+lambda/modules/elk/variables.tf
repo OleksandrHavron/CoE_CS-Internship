@@ -221,11 +221,6 @@ variable "logstash_connection_private_key_path" {
 }
 
 
-variable "filebeat_count" {
-  type    = number
-  default = 0
-}
-
 variable "filebeat_template_file_path" {
   type    = string
   default = "./modules/elk/etc/logstash_config.tpl"
@@ -239,6 +234,11 @@ variable "filebeat_connection_user" {
 variable "filebeat_connection_hosts" {
   type    = list(string)
   default = []
+}
+
+variable "filebeat_count" {
+  type    = number
+  default = 0
 }
 
 variable "filebeat_connection_private_key_path" {

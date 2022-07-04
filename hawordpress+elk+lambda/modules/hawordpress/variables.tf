@@ -116,6 +116,11 @@ variable "asg_name_prefix" {
   default = "education-"
 }
 
+variable "asg_name" {
+  type    = string
+  default = "hawordpress_asg"
+}
+
 variable "asg_image_id" {
   description = "AMI of the AutoScaling Group instances.(Default=Amazon Linux 2)"
   type        = string

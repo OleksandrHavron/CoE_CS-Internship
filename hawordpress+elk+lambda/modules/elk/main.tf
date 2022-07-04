@@ -29,11 +29,11 @@ resource "aws_instance" "bastion" {
 ################################################################################
 
 resource "aws_instance" "es_master_node" {
-  count                       = var.es_master_node_count
-  ami                         = var.es_master_node_ami
-  instance_type               = var.es_master_node_instance_type
-  subnet_id = var.es_subnet_ids[count.index % length(var.es_subnet_ids)]
- # subnet_id                   = count.index < var.es_master_node_count / length(var.es_master_node_subnet_ids) ? aws_subnet.hawordpress-private-eu-central-1a.id : aws_subnet.hawordpress-private-eu-central-1b.idvar.es_master_node_subnet_id
+  count         = var.es_master_node_count
+  ami           = var.es_master_node_ami
+  instance_type = var.es_master_node_instance_type
+  subnet_id     = var.es_subnet_ids[count.index % length(var.es_subnet_ids)]
+  # subnet_id                   = count.index < var.es_master_node_count / length(var.es_master_node_subnet_ids) ? aws_subnet.hawordpress-private-eu-central-1a.id : aws_subnet.hawordpress-private-eu-central-1b.idvar.es_master_node_subnet_id
   vpc_security_group_ids      = var.es_master_node_vpc_security_group_ids
   associate_public_ip_address = var.es_master_node_associate_public_ip_address
   key_name                    = aws_key_pair.elastic_ssh_key.key_name
@@ -44,10 +44,10 @@ resource "aws_instance" "es_master_node" {
 }
 
 resource "aws_instance" "es_data_node" {
-  count                       = var.es_data_node_count
-  ami                         = var.es_data_node_ami
-  instance_type               = var.es_data_node_instance_type
-  subnet_id = var.es_subnet_ids[count.index % length(var.es_subnet_ids)]
+  count         = var.es_data_node_count
+  ami           = var.es_data_node_ami
+  instance_type = var.es_data_node_instance_type
+  subnet_id     = var.es_subnet_ids[count.index % length(var.es_subnet_ids)]
   #subnet_id                   = var.es_data_node_subnet_id
   vpc_security_group_ids      = var.es_data_node_vpc_security_group_ids
   associate_public_ip_address = var.es_data_node_associate_public_ip_address
@@ -416,8 +416,8 @@ resource "null_resource" "move_filebeat_file" {
     bastion_private_key = file(var.connection_bastion_private_key_path)
   }
   provisioner "file" {
-    source      = "filebeat.yml"
-    destination = "filebeat.yml"
+    source = "./modules/elk/etc/filebeat.yml"
+    destination  = "filebeat.yml"
   }
 }
 
@@ -442,10 +442,13 @@ resource "null_resource" "install_filebeat" {
       "sudo yum update -y",
       "sudo rpm -i https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.5.1-x86_64.rpm",
       "sudo sed -i 's@kibana_ip@${aws_instance.kibana.public_ip}@g' filebeat.yml",
-      "sudo sed -i 's@logstash_ip@${aws_instance.logstash[0].public_ip}@g' filebeat.yml",
+      "sudo sed -i 's@logstash1_ip@${aws_instance.logstash[0].public_ip}@g' filebeat.yml",
+      "sudo sed -i 's@logstash2_ip@${aws_instance.logstash[1].public_ip}@g' filebeat.yml",
+      "sudo rm /etc/filebeat/filebeat.yml",
       "sudo rm /etc/filebeat/filebeat.yml",
       "sudo cp filebeat.yml /etc/filebeat/",
       "sudo systemctl start filebeat.service"
+
     ]
   }
 }
