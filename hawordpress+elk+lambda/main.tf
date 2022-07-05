@@ -2,6 +2,10 @@ locals {
   hawordpress_asg_name = "hawordpress_asg"
 }
 
+data "aws_route53_zone" "hawordpress" {
+  name = "ohavron-ocg1.link"
+}
+
 module "hawordpress" {
   source = "./modules/hawordpress"
 
@@ -19,7 +23,7 @@ module "hawordpress" {
   rds_allocated_storage      = 5
   rds_max_allocated_storage  = 20
   rds_user                   = "user"
-  rds_db_name                = "hawordpress-db"
+  rds_db_name                = "hawordpressdb"
   rds_port                   = "3306"
 
   efs_creation_token     = "efs"
@@ -42,15 +46,16 @@ module "hawordpress" {
   asg_desired_capacity            = 2
   asg_vpc_zone_identifier         = [aws_subnet.hawordpress-private-eu-central-1a.id, aws_subnet.hawordpress-private-eu-central-1b.id]
 
-  acm_domain_name         = "ohavron-ocg1.link"
-  acm_domain_name_zone_id = "Z067633235P5TW5UJ6PXY"
-
   alb_vpc_id                           = aws_vpc.hawordpress.id
   alb_subnets                          = [aws_subnet.hawordpress-public-eu-central-1a.id, aws_subnet.hawordpress-public-eu-central-1b.id]
   alb_security_groups                  = [aws_security_group.alb.id]
   alb_enable_cross_zone_load_balancing = true
 
-  aws_route53_zone_name = "ohavron-ocg1.link"
+  hawordpress_record_name    = data.aws_route53_zone.hawordpress.name
+  hawordpress_record_zone_id = data.aws_route53_zone.hawordpress.zone_id
+
+  ssh_key_name = "tf-kp2"
+  ssh_key_path = "tf-kp.pub"
 }
 
 module "lambda_http_checker" {
@@ -95,4 +100,10 @@ module "elk" {
   filebeat_count                       = length(data.aws_instances.hawordpress_asg.private_ips)
   filebeat_connection_private_key_path = "./tf-kp"
 
+  elk_record_zone_id           = data.aws_route53_zone.hawordpress.zone_id
+  elk_record_name              = "elk.${data.aws_route53_zone.hawordpress.name}"
+  elasticsearch_zone_name      = "elasticsearch.${data.aws_route53_zone.hawordpress.name}"
+  elasticsearch_zone_vpc_id    = aws_vpc.hawordpress.id
+  logstash_zone_name           = "logstash.${data.aws_route53_zone.hawordpress.name}"
+  logstash_zone_vpc_id         = aws_vpc.hawordpress.id
 }

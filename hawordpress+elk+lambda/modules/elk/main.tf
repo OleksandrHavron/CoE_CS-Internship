@@ -454,6 +454,46 @@ resource "null_resource" "install_filebeat" {
 }
 
 ################################################################################
+# Route53
+################################################################################
+
+resource "aws_route53_record" "elk" {
+  zone_id = var.elk_record_zone_id
+  name    = var.elk_record_name
+  type    = "A"
+
+  records = ["${aws_instance.kibana.public_ip}"]
+  ttl     = 300
+}
+
+
+resource "aws_route53_zone" "elasticsearch" {
+  name = var.elasticsearch_zone_name
+
+  vpc {
+    vpc_id = var.elasticsearch_zone_vpc_id
+  }
+}
+
+
+resource "aws_route53_record" "elasticsearch" {
+  zone_id = aws_route53_zone.elasticsearch.zone_id
+  name    = aws_route53_zone.elasticsearch.name
+  type    = "A"
+
+  records = ["${aws_instance.es_master_node[1].private_ip}"]
+  ttl     = 300
+}
+
+resource "aws_route53_zone" "logstash" {
+  name = var.logstash_zone_name
+
+  vpc {
+    vpc_id = var.logstash_zone_vpc_id
+  }
+}
+
+################################################################################
 # CloudWatch
 ################################################################################
 

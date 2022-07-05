@@ -4,6 +4,15 @@ locals {
 }
 
 ################################################################################
+# SSH key
+################################################################################
+
+resource "aws_key_pair" "ssh_key" {
+  key_name   = var.ssh_key_name
+  public_key = file(var.ssh_key_path)
+}
+
+################################################################################
 # Relational Database Service
 ################################################################################
 
@@ -78,6 +87,7 @@ resource "aws_launch_configuration" "hawordpress" {
   security_groups             = var.asg_security_groups
   associate_public_ip_address = var.asg_associate_public_ip_address
   enable_monitoring           = var.asg_enable_monitoring
+  key_name                    = aws_key_pair.ssh_key.key_name
 
   user_data = <<EOF
 #!/bin/bash
@@ -197,13 +207,9 @@ module "alb" {
 # Route53
 ################################################################################
 
-data "aws_route53_zone" "hawordpress" {
-  name = var.aws_route53_zone_name
-}
-
 resource "aws_route53_record" "hawordpress" {
-  zone_id = data.aws_route53_zone.hawordpress.zone_id
-  name    = data.aws_route53_zone.hawordpress.name
+  zone_id = var.hawordpress_record_zone_id
+  name    = var.hawordpress_record_name
   type    = "A"
 
   alias {

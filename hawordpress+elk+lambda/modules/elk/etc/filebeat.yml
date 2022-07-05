@@ -12,7 +12,7 @@ filebeat.config.modules:
 setup.template.settings:
   index.number_of_shards: 1
 setup.kibana:
-  host: "kibana:5601"
+  host: "kibana_ip:5601"
 output.logstash:
   hosts: ["logstash1_ip:5044", "logstash2_ip:5044"]
 processors:

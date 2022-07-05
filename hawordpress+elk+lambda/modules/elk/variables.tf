@@ -245,20 +245,26 @@ variable "filebeat_connection_private_key_path" {
   type = string
 }
 
-# variable "aws_route53_zone_elasticsearch" {
-#   type        = string
-#   description = "Hosted zone name for Elastic Search"
-#   default     = "elasticsearch.${var.aws_route53_zone_name}"
-# }
+variable "elk_record_zone_id" {
+  type = string
+}
 
-# variable "aws_route53_zone_logstash" {
-#   type        = string
-#   description = "Hosted zone name for Logstash"
-#   default     = "logstash.${var.aws_route53_zone_name}"
-# }
+variable "elk_record_name" {
+  type = string
+}
 
-# variable "aws_route53_zone_kibana" {
-#   type        = string
-#   description = "Hosted zone name for Kibana"
-#   default     = "elk.${var.aws_route53_zone_name}"
-# }
+variable "elasticsearch_zone_name" {
+  type = string
+}
+
+variable "elasticsearch_zone_vpc_id" {
+  type = string
+}
+
+variable "logstash_zone_name" {
+  type = string
+}
+
+variable "logstash_zone_vpc_id" {
+  type = string
+}

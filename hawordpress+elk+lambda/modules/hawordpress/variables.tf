@@ -207,3 +207,19 @@ variable "aws_route53_zone_name" {
   description = "ohavron-ocg1.link"
   default = ""
 }
+
+variable "hawordpress_record_zone_id" {
+  type = string
+}
+
+variable "hawordpress_record_name" {
+  type = string
+}
+
+variable "ssh_key_name" {
+  type = string
+}
+ 
+variable "ssh_key_path" {
+  type = string
+}
