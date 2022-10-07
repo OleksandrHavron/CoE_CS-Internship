@@ -1,0 +1,6 @@
+annotations:
+  kubernetes.io/ingress.class: alb
+  alb.ingress.kubernetes.io/scheme: internet-facing
+
+  # for creating record-set
+  external-dns.alpha.kubernetes.io/hostname: my-app.test-dns.com # give your domain name here
