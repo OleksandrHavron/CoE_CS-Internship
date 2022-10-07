@@ -7,7 +7,7 @@ pipeline {
         stage('Terraform init'){
             // Initialize a working directory
             steps{
-                dir('./OleksandrHavron/tf_files') {
+                dir('./tf/eks') {
                     sh 'terraform init'
                 }
             }
@@ -16,7 +16,7 @@ pipeline {
         stage('Terraform destroy'){
             // Destroy all resources
             steps{
-                dir('./OleksandrHavron/tf_files') {
+                dir('./tf/eks') {
                     sh 'terraform apply -destroy -auto-approve -no-color'
                 }
             }
