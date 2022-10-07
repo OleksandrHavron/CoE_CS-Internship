@@ -15,7 +15,7 @@ pipeline {
             steps{
                 // Execute the actions proposed in a execution plan
                 dir('./OleksandrHavron/tf_files') {
-                    sh 'terraform apply -auto-approve tfplan -no-color'
+                    sh 'terraform apply -auto-approve -no-color'
                 }
             }
         }
