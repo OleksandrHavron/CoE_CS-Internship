@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Terraform init'){
             steps{
-                dir('./tf/eks/pipelines') {
+                dir('./tf/eks') {
                     // Initialize a working directory
                     sh 'terraform init -reconfigure -no-color'
                 }
