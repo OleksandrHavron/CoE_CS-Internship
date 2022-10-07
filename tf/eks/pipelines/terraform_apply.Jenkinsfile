@@ -14,7 +14,7 @@ pipeline {
         stage('Terraform apply'){
             steps{
                 // Execute the actions proposed in a execution plan
-                dir('./OleksandrHavron/tf_files') {
+                dir('./tf/eks') {
                     sh 'terraform apply -auto-approve -no-color'
                 }
             }
