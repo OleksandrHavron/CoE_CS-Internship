@@ -19,7 +19,7 @@ pipeline {
                 withAWS(credentials: "Amazon creds", region: "eu-central-1"){
                     dir('./eks/k8s'){
                         sh 'kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller/crds?ref=master"'
-                        sh 'eksctl create iamserviceaccount  --cluster OleksandrHavron-cluster --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn arn:aws:iam:::policy/AWSLoadBalancerControllerIAMPolicy --override-existing-serviceaccounts --approve'
+                        sh 'eksctl create iamserviceaccount  --cluster OleksandrHavron-cluster --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn arn:aws:iam::815668066821:policy/AWSLoadBalancerControllerIAMPolicy --override-existing-serviceaccounts --approve'
                         sh 'kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller/crds?ref=master"'
                         sh 'helm repo add eks https://aws.github.io/eks-charts'
                         sh 'helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=OleksandrHavron-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set image.tag="v2.4.1" --version="1.4.1"'
