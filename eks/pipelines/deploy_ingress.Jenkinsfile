@@ -10,7 +10,7 @@ pipeline {
                 }
                 // Updating kubeconfig with cluster created by terraform
                 withAWS(credentials: "Amazon creds", region: "eu-central-1"){
-                    sh 'aws eks update-kubeconfig --name $(terraform -chdir="OleksandrHavron/tf_files" output -raw cluster_name)'
+                    sh 'aws eks update-kubeconfig --name OleksandrHavron-cluster -raw cluster_name)'
                 }
             }
         }
