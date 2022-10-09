@@ -41,3 +41,4 @@ email_address
 coe-internship.pem
 id.pem
 tf-kp
+.env.local
