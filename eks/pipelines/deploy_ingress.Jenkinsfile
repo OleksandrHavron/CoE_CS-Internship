@@ -24,7 +24,7 @@ pipeline {
                         sh 'helm repo add eks https://aws.github.io/eks-charts'
                         sh 'helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=OleksandrHavron-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set image.tag="v2.4.1" --version="1.4.1"'
                         sh 'kubectl -n kube-system rollout status deployment aws-load-balancer-controller'
-                        sh 'kubectl apply -f ./eks/k8s/ingress.yaml'
+                        sh 'kubectl apply -f ingress.yaml'
                     }
                 }
             }

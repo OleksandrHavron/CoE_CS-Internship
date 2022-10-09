@@ -19,7 +19,7 @@ pipeline {
                 withAWS(credentials: "Amazon creds", region: "eu-central-1"){
                     dir('./eks/k8s'){
                         sh 'eksctl create iamserviceaccount --name external-dns --namespace app --cluster OleksandrHavron-cluster --attach-policy-arn arn:aws:iam::815668066821:policy/AWSExternalDNSIAMPolicy --approve'
-                        sh 'kubectl apply -f ./eks/k8s/external-dns.yaml'
+                        sh 'kubectl apply -f external-dns.yaml'
                     }
                 }
             }
