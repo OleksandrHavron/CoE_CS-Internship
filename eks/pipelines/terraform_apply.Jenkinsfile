@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Terraform init'){
             steps{
-                dir('./tf/eks') {
+                dir('./eks/tf') {
                     // Initialize a working directory
                     sh 'terraform init -reconfigure -no-color'
                 }
@@ -14,7 +14,7 @@ pipeline {
         stage('Terraform apply'){
             steps{
                 // Execute the actions proposed in a execution plan
-                dir('./tf/eks') {
+                dir('./eks/tf') {
                     sh 'terraform apply -auto-approve -no-color'
                 }
             }

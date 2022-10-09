@@ -9,7 +9,7 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/subnets: "subnet-0a1df98ecaf7cfd02, subnet-0095d309b61f2b0ec"
     # for creating record-set
-    external-dns.alpha.kubernetes.io/hostname: test.ohavron-ocg1.link # give your domain name here
+    external-dns.alpha.kubernetes.io/hostname: eks.ohavron-ocg1.link # give your domain name here
 spec:
   rules:
     - http:

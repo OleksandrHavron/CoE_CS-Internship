@@ -47,7 +47,7 @@ metadata:
   namespace: app
   name: uiservice
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: eks1.ohavron-ocg1.link
+    external-dns.alpha.kubernetes.io/hostname: ui.ohavron-ocg1.link
 spec:
   selector:
     app: ui
